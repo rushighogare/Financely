@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "./styles.css";
 import Input from "../Input"
 import Button from "../Button";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, db, provider } from "../../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { GoogleAuthProvider } from "firebase/auth/web-extension";
 
 function SignupSigninComponent(){
     const [name, setName]=useState("");
@@ -89,6 +90,37 @@ function SignupSigninComponent(){
         }
     }
 
+    function googleAuth(){
+        setLoading(true);
+        try{
+            signInWithPopup(auth, provider)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                console.log("User>>", user);
+                createDoc(user);
+                setLoading(false);
+                navigate("/dashboard");
+                toast.success("User authenticated");
+                // IdP data available using getAdditionalUserInfo(result)
+                // ...
+            }).catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                setLoading(false);
+                toast.error(errorMessage);
+            });
+        }catch(e){
+            setLoading(false);
+            toast.error(e.message);
+        }
+        
+    }
+
     function LoginUsingEmail(){
         console.log("Email", email);
         console.log("Password", password);
@@ -146,7 +178,9 @@ function SignupSigninComponent(){
                     onClick={LoginUsingEmail}
                     />
                     <p className="p-login">or</p>
-                    <Button text={loading? "Loading..." : "Login Using Google"}
+                    <Button
+                    onClick={googleAuth} 
+                    text={loading? "Loading..." : "Login Using Google"}
                     blue={true}/>
                     <p 
                     className="p-login"
@@ -197,6 +231,7 @@ function SignupSigninComponent(){
                     />
                     <p className="p-login">or</p>
                     <Button 
+                    onClick={googleAuth} 
                     text={loading? "Loading..." : "Signup Using Google"}
                     blue={true}/>
                     <p 
