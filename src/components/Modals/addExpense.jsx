@@ -54,7 +54,7 @@ function AddExpenseModal({
             { required: true, message: "Please select the expense date!" },
           ]}
         >
-        <DatePicker className="custom-input" format="YYYY-MM-DD" />
+        <DatePicker className="custom-input" format="YYYY-MM-DD"/>
         </Form.Item>
         <Form.Item
           label="Tag"
