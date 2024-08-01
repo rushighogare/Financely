@@ -11,6 +11,7 @@ import moment from "moment";
 import TransactionsTable from "../components/TransactionsTable";
 import ChartComponent from "../components/Charts";
 import NoTransactions from "../components/NoTransactions";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard(){
     // const transactions=[
@@ -38,6 +39,14 @@ function Dashboard(){
     const [income, setIncome]=useState(0);
     const [expense, setExpense]=useState(0);
     const [totalBalance, setTotalBalance]=useState(0);
+
+    const navigate=useNavigate();
+
+    useEffect(()=>{
+        if(!user){
+            navigate("/");
+        }
+    }, []);
 
     const showExpenseModal=()=>{
         setIsExpenseModalVisible(true);
